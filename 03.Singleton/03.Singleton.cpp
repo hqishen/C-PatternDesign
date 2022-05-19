@@ -1,5 +1,9 @@
 ﻿#include <iostream>
-
+#include <mutex>
+/*
+饿汉式
+*/
+#if 0
 template<typename T>
 class Singleton {
 private:
@@ -30,6 +34,40 @@ private:
 
 template<typename T>
 T* Singleton<T>::m_instance = new T();
+#else
+template<typename T>
+class Singleton {
+private:
+	Singleton() {}
+public:
+	friend void Data(Singleton<T>& obj); //测试使用
+
+	static T* Instance() {
+		std::lock_guard<std::recursive_mutex> lock(m_mutex);
+		if (nullptr == m_instance) {
+			m_instance = new T();
+		}
+		return m_instance;
+	}
+	static void Destroy() {
+		std::lock_guard<std::recursive_mutex> lock(m_mutex);
+		if (m_instance) {
+			delete m_instance;
+			m_instance = nullptr;
+		}
+	}
+
+private:
+	static T* m_instance;
+	static std::recursive_mutex m_mutex;
+};
+
+template<class T>
+std::recursive_mutex Singleton<T>::m_mutex;
+template<class T>
+T* Singleton<T>::m_instance = NULL;
+
+#endif
 
 template<typename T>
 void Data(Singleton<T> &obj) {
@@ -50,6 +88,7 @@ private:
 
 int main()
 {
+	
 	std::cout << Singleton<A>::Instance()->getA() << std::endl;
 	std::cout << Singleton<A>::Instance()->getB() << std::endl;
 
