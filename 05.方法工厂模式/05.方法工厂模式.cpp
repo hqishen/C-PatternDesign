@@ -1,5 +1,8 @@
 ﻿// 05.方法工厂模式.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
+/*
+只能生产单一的产品，不能生产一个产品组，所以就需要添加抽象工厂模式
+*/
 
 #include <iostream>
 
@@ -7,7 +10,6 @@ class Shape {
 public:
     virtual void area() = 0;
 };
-
 
 class Round : public Shape {
 public:
@@ -56,14 +58,11 @@ public:
     }
 };
 
-
-int main()
-{
+int main() {
     AbstractFactory* factory = new TriangleFactory();
     Shape * shape = factory->createShape();
     shape->area();
     delete shape;
     delete factory;
-
     return 0;
 }
